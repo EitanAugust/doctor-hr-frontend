@@ -2,9 +2,12 @@ from flask import Flask, jsonify, request
 from pymodm import connect
 import models
 import datetime
+from flask_cors import CORS
 
 app = Flask(__name__)
-connect("mongodb://localhost:27017/bme590")
+CORS(app)
+
+connect("mongodb://vcm-3746.vm.duke.edu:27017/bme590")
 
 
 @app.route("/api/heart_rate/<user_email>", methods=["GET"])
@@ -19,12 +22,14 @@ def return_hrs(user_email):
     try:
         user = models.User.objects.raw({"_id": user_email}).first()
         heart_rates = user.heart_rate
+        heart_rate_times = user.heart_rate_times
 
     except FileNotFoundError:
         return jsonify({"message": "User does not exist"}), 404
 
     data = {
         "hrs": heart_rates,
+        "times": heart_rate_times
     }
     return jsonify(data)
 
