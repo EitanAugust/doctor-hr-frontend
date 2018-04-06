@@ -4,6 +4,7 @@ import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
+import TableEx from './tableEx.js'
 import axios from 'axios';
 
 
@@ -26,13 +27,12 @@ var style = {
     }
 }
 
-class TextFieldExample extends React.Component {
+class App extends React.Component {
     constructor() {
         super();
         this.state = {
             "user_email": "", // This is where the content for the TextField used below is stored
-            "hrs": "",
-            "times": "",
+            "tableData": "",
         };
     }
 
@@ -49,24 +49,11 @@ class TextFieldExample extends React.Component {
         axios.get("http://vcm-3746.vm.duke.edu:5000/api/heart_rate/" + this.state.user_email).then( (response) => {
             console.log(response);
             console.log(response.status);
-            this.setState({"hrs": response.data.hrs});
-            this.setState({"times": response.data.times});
+            this.setState({"tableData": [response.data.hrs, response.data.times]});
         })
     }
 
     render() {
-        var a =[<div><span style={style.HR}> </span> HR (BPM)<span style={style.HR}> </span> Time</div>];
-
-        for (var i = 0; i < this.state.hrs.length; i++) {
-            a.push((
-                <div>
-                    <span style={style.HRs}> </span>
-                {this.state.hrs[i]}
-                    <span style={style.Time}> </span>
-                {this.state.times[i]}
-                </div>
-            ));
-        }
 
         return (
             <div>
@@ -83,12 +70,14 @@ class TextFieldExample extends React.Component {
                 <Button variant = "raised" color = "blue" style={style.Button} onClick={this.getHR}>
                     Get Data.
                 </Button>
-                <div>
-                    {a}
-                </div>
+
+                <TableEx tableData={this.state.tableData} heading={["HR (BPM)", "Time"]}/>
+
+                
+
             </div>
         );
     }
 }
 
-export default TextFieldExample;
+export default App;
